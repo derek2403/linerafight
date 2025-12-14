@@ -2,7 +2,7 @@ export const GRID_SIZE = 20; // 20x20 grid
 export const CELL_SIZE = 40; // Pixels
 export const FPS = 60;
 
-export const INITIAL_GOLD = 100;
+export const INITIAL_GOLD = 200;
 export const INITIAL_LIVES = 100;
 
 export const TOWERS = {
