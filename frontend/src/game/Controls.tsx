@@ -4,10 +4,12 @@ import { TowerType } from './engine/types';
 import towerBasic from './assets/tower-basic.png';
 import towerSplash from './assets/tower-splash.png';
 import towerSlow from './assets/tower-slow.png';
+import itemStar from './assets/item-star.png';
 
 interface ControlsProps {
     gold: number;
     lives: number;
+    stars: number;
     wave: number;
     waveTimer: number;
     selectedTower: TowerType | null;
@@ -18,7 +20,7 @@ interface ControlsProps {
 }
 
 const Controls: React.FC<ControlsProps> = ({
-    gold, lives, wave, waveTimer, selectedTower, onSelectTower, onStartGame, onSkipWave, isPlaying
+    gold, lives, stars, wave, waveTimer, selectedTower, onSelectTower, onStartGame, onSkipWave, isPlaying
 }) => {
     const getTowerImg = (type: string) => {
         switch (type) {
@@ -41,6 +43,17 @@ const Controls: React.FC<ControlsProps> = ({
                     <div className="text-xs text-red-500 uppercase font-bold tracking-wider">Health</div>
                     <div className="text-2xl font-bold text-white font-mono">{lives}%</div>
                 </div>
+
+                {/* New Stars Stat */}
+                <div className="col-span-2 bg-black/30 p-2 rounded border border-white/10 flex justify-between items-center px-4 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-yellow-500/10 pointer-events-none" />
+                    <div className="flex items-center gap-3 z-10">
+                        <img src={itemStar} alt="Stars" className="w-6 h-6 animate-pulse" />
+                        <span className="text-yellow-400 font-bold uppercase text-sm">Stars Collected</span>
+                    </div>
+                    <span className="text-xl font-mono text-yellow-300 z-10">{stars}</span>
+                </div>
+
                 <div className="col-span-2 bg-black/30 p-2 rounded border border-white/10 flex justify-between items-center px-4">
                     <div>
                         <span className="text-blue-400 font-bold uppercase text-sm block">Wave</span>

@@ -33,25 +33,25 @@ export interface Projectile extends Entity {
     type: TowerType;
 }
 
-export interface SpawnEvent {
-    type: EnemyType;
-    delay: number; // Time until spawn in seconds relative to wave start, or absolute? 
-    // Let's make it simple: Frame countdown or similar.
-    // Actually simpler: Queue of types, with a spawn timer.
+export interface Drop extends Entity {
+    value: number;
+    createdAt: number; // For despawning if needed, or animation
 }
 
 export interface GameState {
     gold: number;
     lives: number;
+    stars: number; // New currency
     wave: number;
     isPlaying: boolean;
     isGameOver: boolean;
     enemies: Enemy[];
     towers: Tower[];
     projectiles: Projectile[];
+    drops: Drop[]; // Active drops on board
 
     // Wave Logic
-    waveTimer: number; // Seconds until next wave
-    spawnQueue: EnemyType[]; // Enemies waiting to enter this wave
-    spawnTimer: number; // Time until next enemy in queue spawns
+    waveTimer: number;
+    spawnQueue: EnemyType[];
+    spawnTimer: number;
 }

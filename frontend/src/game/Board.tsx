@@ -5,6 +5,7 @@ import { CELL_SIZE, GRID_SIZE, LEVEL_1_PATH } from './engine/constants';
 // Map & Entities
 import tileGrass from './assets/tile-grass.png';
 import tilePath from './assets/tile-path.png';
+import itemStar from './assets/item-star.png';
 
 // Towers
 import towerBasic from './assets/tower-basic.png';
@@ -19,9 +20,10 @@ import enemyTank from './assets/enemy-tank.png';
 interface BoardProps {
     gameState: GameState;
     onTileClick: (pos: Position) => void;
+    onDropClick: (id: string) => void;
 }
 
-const Board: React.FC<BoardProps> = ({ gameState, onTileClick }) => {
+const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) => {
     const isPath = (x: number, y: number) => {
         return LEVEL_1_PATH.some(p => p[0] === y && p[1] === x);
     };
@@ -71,6 +73,25 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick }) => {
                         />
                     ))}
                 </div>
+            ))}
+
+            {/* Drops Layer (Below enemies/towers? Or above? Above is easier to click) */}
+            {gameState.drops.map(drop => (
+                <div
+                    key={drop.id}
+                    onClick={(e) => { e.stopPropagation(); onDropClick(drop.id); }}
+                    className="absolute z-40 cursor-pointer hover:scale-125 transition-transform animate-bounce"
+                    style={{
+                        left: drop.x * CELL_SIZE + CELL_SIZE / 4,
+                        top: drop.y * CELL_SIZE + CELL_SIZE / 4,
+                        width: CELL_SIZE / 2,
+                        height: CELL_SIZE / 2,
+                        backgroundImage: `url(${itemStar})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                    }}
+                />
             ))}
 
             {/* Enemies Layer */}

@@ -6,7 +6,7 @@ import { TowerType, Position } from './engine/types';
 import { TOWERS, LEVEL_1_PATH } from './engine/constants';
 
 const Game: React.FC = () => {
-    const { gameState, setGameState, startGame, skipWave } = useGameLoop();
+    const { gameState, setGameState, startGame, skipWave, collectDrop } = useGameLoop();
     const [selectedTower, setSelectedTower] = useState<TowerType | null>(null);
 
     const handleTileClick = (pos: Position) => {
@@ -52,7 +52,11 @@ const Game: React.FC = () => {
                 {/* Retro Frame */}
                 <div className="relative z-10 p-4 bg-stone-800 rounded-xl shadow-2xl border-4 border-stone-700">
                     <div className="border border-stone-900 rounded-lg overflow-hidden ring-4 ring-black/40">
-                        <Board gameState={gameState} onTileClick={handleTileClick} />
+                        <Board
+                            gameState={gameState}
+                            onTileClick={handleTileClick}
+                            onDropClick={collectDrop}
+                        />
                     </div>
                 </div>
             </div>
@@ -61,6 +65,7 @@ const Game: React.FC = () => {
             <Controls
                 gold={gameState.gold}
                 lives={gameState.lives}
+                stars={gameState.stars}
                 wave={gameState.wave}
                 waveTimer={gameState.waveTimer}
                 selectedTower={selectedTower}
@@ -76,6 +81,7 @@ const Game: React.FC = () => {
                     <div className="text-center p-12 border-2 border-red-600 bg-red-950/30 rounded-lg shadow-[0_0_50px_rgba(220,38,38,0.5)]">
                         <h1 className="text-7xl font-black text-red-500 mb-6 tracking-tighter">GAME OVER</h1>
                         <div className="text-2xl mb-8 font-bold">Survived {gameState.wave} Waves</div>
+                        <div className="text-xl mb-8 text-yellow-400">Collected {gameState.stars} Stars!</div>
                         <button
                             className="px-8 py-4 bg-red-600 text-white font-bold text-xl rounded hover:bg-red-500 hover:scale-105 transition-all shadow-lg"
                             onClick={() => window.location.reload()}

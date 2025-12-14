@@ -1,20 +1,23 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { GameState, Enemy, Tower, Projectile, EnemyType } from './types';
+import { GameState, Enemy, Tower, Projectile, EnemyType, Drop } from './types';
 import { ENEMIES, TOWERS, LEVEL_1_PATH, INITIAL_GOLD, INITIAL_LIVES } from './constants';
 
 const WAVE_INTERVAL = 15; // Seconds between waves
 const SPAWN_RATE = 0.8; // Seconds between enemies in a wave
+const DROP_CHANCE = 0.3; // 30% chance
 
 export const useGameLoop = () => {
     const [gameState, setGameState] = useState<GameState>({
         gold: INITIAL_GOLD,
         lives: INITIAL_LIVES,
+        stars: 0,
         wave: 1,
         isPlaying: false,
         isGameOver: false,
         enemies: [],
         towers: [],
         projectiles: [],
+        drops: [],
         waveTimer: 0,
         spawnQueue: [],
         spawnTimer: 0,
@@ -45,12 +48,26 @@ export const useGameLoop = () => {
             isPlaying: true,
             wave: 0,
             waveTimer: 0,
-            spawnQueue: []
+            spawnQueue: [],
+            stars: 0,
+            drops: []
         }));
     }, []);
 
     const skipWave = useCallback(() => {
         setGameState(prev => ({ ...prev, waveTimer: 0 }));
+    }, []);
+
+    const collectDrop = useCallback((dropId: string) => {
+        setGameState(prev => {
+            const drop = prev.drops.find(d => d.id === dropId);
+            if (!drop) return prev;
+            return {
+                ...prev,
+                stars: prev.stars + drop.value,
+                drops: prev.drops.filter(d => d.id !== dropId)
+            };
+        });
     }, []);
 
     const updateGame = useCallback((time: number) => {
@@ -64,6 +81,7 @@ export const useGameLoop = () => {
             let nextSpawnTimer = prev.spawnTimer - deltaTime;
             let nextSpawnQueue = [...prev.spawnQueue];
             let nextEnemies = [...prev.enemies];
+            let nextDrops = [...prev.drops];
             let nextWave = prev.wave;
 
             // 1. Spawning
@@ -182,6 +200,16 @@ export const useGameLoop = () => {
                     if (target.hp <= 0) {
                         const template = Object.values(ENEMIES).find(t => t.id === target.type);
                         goldEarned += template?.reward || 0;
+                        // Drop Logic
+                        if (Math.random() < DROP_CHANCE) {
+                            nextDrops.push({
+                                id: crypto.randomUUID(),
+                                x: target.x,
+                                y: target.y,
+                                value: 1,
+                                createdAt: time
+                            });
+                        }
                     }
                 } else {
                     const move = proj.speed * deltaTime;
@@ -190,6 +218,9 @@ export const useGameLoop = () => {
                 }
             });
             enemyMap.forEach(e => { if (e.hp > 0) survivingEnemies.push(e); });
+
+            // Despawn Drops? (Optional: let them persist for now or just max count)
+            // For now infinite duration.
 
             return {
                 ...prev,
@@ -203,6 +234,7 @@ export const useGameLoop = () => {
                 enemies: survivingEnemies,
                 towers: nextTowers,
                 projectiles: nextProjectiles.filter(p => p.active),
+                drops: nextDrops
             };
         });
 
@@ -218,6 +250,7 @@ export const useGameLoop = () => {
         gameState,
         setGameState,
         startGame,
-        skipWave
+        skipWave,
+        collectDrop
     };
 };
