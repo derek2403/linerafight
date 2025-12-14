@@ -1,13 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Board from './Board';
 import Controls from './Controls';
 import { useGameLoop } from './engine/useGameLoop';
 import { TowerType, Position } from './engine/types';
 import { TOWERS, LEVEL_1_PATH } from './engine/constants';
+import { useGame } from '../context/GameContext';
 
 const Game: React.FC = () => {
-    const { gameState, setGameState, startGame, skipWave, collectDrop } = useGameLoop();
+    const { gameState, setGameState, startGame: localStartGame, skipWave, collectDrop } = useGameLoop();
     const [selectedTower, setSelectedTower] = useState<TowerType | null>(null);
+    const { startGame: chainStartGame, processWave, endGame: chainEndGame, isConnecting } = useGame();
+
+    // Track wave to trigger chain actions
+    const prevWaveRef = useRef(gameState.wave);
+
+    // Track if we are in a game session to call EndGame on game over
+    const isSessionActiveRef = useRef(false);
+
+    useEffect(() => {
+        const syncChain = async () => {
+            // Check for Game Start (Wave 1 and was not playing or wave 0?)
+            if (gameState.isPlaying && !isSessionActiveRef.current) {
+                isSessionActiveRef.current = true;
+                // Trigger Chain Start
+                await chainStartGame(1); // Default wager 1
+            }
+
+            // Check for Wave Progression
+            if (gameState.wave > prevWaveRef.current && prevWaveRef.current > 0) {
+                // Wave Survived -> Battle/Hit
+                await processWave(gameState.wave);
+            }
+            prevWaveRef.current = gameState.wave;
+
+            // Check for Game Over
+            if (gameState.isGameOver && isSessionActiveRef.current) {
+                isSessionActiveRef.current = false;
+                await chainEndGame();
+            }
+        };
+
+        syncChain();
+    }, [gameState.wave, gameState.isPlaying, gameState.isGameOver, chainStartGame, processWave, chainEndGame]);
 
     const handleTileClick = (pos: Position) => {
         if (!selectedTower) return;
@@ -70,10 +104,17 @@ const Game: React.FC = () => {
                 waveTimer={gameState.waveTimer}
                 selectedTower={selectedTower}
                 onSelectTower={setSelectedTower}
-                onStartGame={startGame}
+                onStartGame={localStartGame}
                 onSkipWave={skipWave}
                 isPlaying={gameState.isPlaying}
             />
+
+            {/* Connection Status Overlay */}
+            {isConnecting && (
+                <div className="absolute top-4 right-4 bg-blue-900/80 px-4 py-2 rounded text-xs text-blue-200 animate-pulse border border-blue-500 z-50">
+                    Connecting to Linera...
+                </div>
+            )}
 
             {/* Game Over Modal */}
             {gameState.isGameOver && (

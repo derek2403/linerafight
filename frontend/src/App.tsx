@@ -1,28 +1,30 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Landing, Games } from './pages';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
+import Landing from './pages/Landing';
 import Game from './game/Game';
-import Layout from './components/Layout';
-
-
 import { GameProvider } from './context/GameContext';
 
-function App() {
+const Layout = () => {
+    return (
+        <div className="min-h-screen bg-black text-white font-sans">
+            <Outlet />
+        </div>
+    );
+};
+
+const App: React.FC = () => {
     return (
         <GameProvider>
             <Router>
                 <Routes>
-                    {/* Main Layout Pages */}
                     <Route element={<Layout />}>
                         <Route path="/" element={<Landing />} />
-                        <Route path="/games" element={<Games />} />
+                        <Route path="/game" element={<Game />} />
                     </Route>
-
-                    {/* Full Screen Game Route */}
-                    <Route path="/game" element={<Game />} />
                 </Routes>
             </Router>
         </GameProvider>
     );
-}
+};
 
 export default App;

@@ -1,1 +1,1 @@
-export const APP_NAME = 'Linera Fight'
+export const CONTRACTS_APP_ID = "3d15f8690d08adb7c9c4bd10c701e257e588338cdfc716ffb79c31d43ec6b5bc";

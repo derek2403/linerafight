@@ -1,19 +1,53 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { DynamicWidget, useIsLoggedIn } from '@dynamic-labs/sdk-react-core';
+import towersImg from '../game/assets/tower-basic.png';
+import enemiesImg from '../game/assets/enemy-soldier.png';
 
 const Landing: React.FC = () => {
-    return (
-        <div className="flex flex-col items-center justify-center min-h-[80vh] bg-gradient-to-br from-indigo-900 to-purple-900 text-white">
-            <h1 className="text-5xl font-bold mb-8">Welcome to Linera Fight</h1>
-            <p className="text-xl mb-8">Experience the next generation of on-chain gaming.</p>
-            <Link
-                to="/game"
-                className="px-8 py-3 bg-pink-600 hover:bg-pink-700 rounded-full font-bold text-lg transition-colors"
-            >
-                Play Now
-            </Link>
-        </div>
-    )
-}
+    const navigate = useNavigate();
+    const isLoggedIn = useIsLoggedIn();
 
-export default Landing
+    return (
+        <div className="relative h-screen overflow-hidden bg-black flex flex-col items-center justify-center">
+            {/* Background with pixel vibe */}
+            <div className="absolute inset-0 z-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900 via-gray-900 to-black"></div>
+
+            <div className="z-10 text-center max-w-2xl px-4">
+                <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 animate-pulse">
+                    LINERA DEFENSE
+                </h1>
+                <p className="text-xl md:text-2xl text-gray-400 mb-12 font-mono">
+                    Defend the blockchain. Earn Stars. Survive the Waves.
+                </p>
+
+                <div className="flex justify-center gap-8 mb-12 drop-shadow-2xl">
+                    <img src={towersImg} className="w-24 h-24 object-contain animate-bounce" style={{ imageRendering: 'pixelated', animationDelay: '0s' }} />
+                    <img src={enemiesImg} className="w-24 h-24 object-contain animate-bounce" style={{ imageRendering: 'pixelated', animationDelay: '0.2s' }} />
+                </div>
+
+                <div className="flex flex-col items-center gap-6">
+                    <div className="p-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
+                        <DynamicWidget />
+                    </div>
+
+                    {isLoggedIn && (
+                        <button
+                            onClick={() => navigate('/game')}
+                            className="px-8 py-4 bg-green-600 text-white font-bold text-xl rounded hover:bg-green-500 hover:scale-105 transition-all shadow-[0_0_20px_rgba(34,197,94,0.5)] uppercase tracking-widest border-2 border-green-400"
+                        >
+                            Enter Game
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* Footer */}
+            <div className="absolute bottom-4 left-0 right-0 text-center text-gray-600 text-xs font-mono">
+                POWERED BY LINERA & DYNAMIC
+            </div>
+        </div>
+    );
+};
+
+export default Landing;
