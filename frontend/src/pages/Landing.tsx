@@ -7,7 +7,7 @@ const Landing: React.FC = () => {
             <h1 className="text-5xl font-bold mb-8">Welcome to Linera Fight</h1>
             <p className="text-xl mb-8">Experience the next generation of on-chain gaming.</p>
             <Link
-                to="/games"
+                to="/game"
                 className="px-8 py-3 bg-pink-600 hover:bg-pink-700 rounded-full font-bold text-lg transition-colors"
             >
                 Play Now
