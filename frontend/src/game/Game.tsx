@@ -80,9 +80,23 @@ const Game: React.FC = () => {
 
     return (
         <div className="flex h-screen text-slate-200 overflow-hidden font-mono">
+            {/* HUD / Controls */}
+            <Controls
+                gold={gameState.gold}
+                lives={gameState.lives}
+                stars={gameState.stars}
+                wave={gameState.wave}
+                waveTimer={gameState.waveTimer}
+                selectedTower={selectedTower}
+                onSelectTower={setSelectedTower}
+                onStartGame={localStartGame}
+                onSkipWave={skipWave}
+                isPlaying={gameState.isPlaying}
+            />
+
             {/* Game Area Wrapper */}
             <div className="flex-1 flex flex-col items-center justify-center p-8 relative">
-                <div className="absolute top-4 left-4 z-50">
+                <div className="absolute top-4 right-4 z-50">
                     <ConnectWallet />
                 </div>
 
@@ -99,22 +113,11 @@ const Game: React.FC = () => {
             </div>
 
             {/* HUD / Controls */}
-            <Controls
-                gold={gameState.gold}
-                lives={gameState.lives}
-                stars={gameState.stars}
-                wave={gameState.wave}
-                waveTimer={gameState.waveTimer}
-                selectedTower={selectedTower}
-                onSelectTower={setSelectedTower}
-                onStartGame={localStartGame}
-                onSkipWave={skipWave}
-                isPlaying={gameState.isPlaying}
-            />
+
 
             {/* Connection Status Overlay */}
             {isConnecting && (
-                <div className="absolute top-4 right-4 bg-blue-900/80 px-4 py-2 rounded text-xs text-blue-200 animate-pulse border border-blue-500 z-50">
+                <div className="absolute top-4 left-4 bg-blue-900/80 px-4 py-2 rounded text-xs text-blue-200 animate-pulse border border-blue-500 z-50">
                     Connecting to Linera...
                 </div>
             )}
