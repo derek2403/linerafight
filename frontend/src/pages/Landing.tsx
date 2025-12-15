@@ -20,7 +20,7 @@ const Landing: React.FC = () => {
             />
 
             <div className="z-10 text-center max-w-2xl px-4">
-                <h1 className="text-6xl md:text-8xl font-['ThaleahFat'] tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 [-webkit-text-stroke:4px_black] drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">
+                <h1 className="text-8xl md:text-9xl font-['ThaleahFat'] tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-b from-yellow-300 to-yellow-600 [-webkit-text-stroke:4px_black] drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">
                     LINERA DEFENSE
                 </h1>
                 <p className="text-xl md:text-2xl text-gray-400 mb-12 font-mono">
