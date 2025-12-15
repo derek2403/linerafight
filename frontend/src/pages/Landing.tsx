@@ -1,18 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDynamicContext, useIsLoggedIn } from '@dynamic-labs/sdk-react-core';
 
 const Landing: React.FC = () => {
     const navigate = useNavigate();
-    const isLoggedIn = useIsLoggedIn();
-    const { setShowAuthFlow } = useDynamicContext();
-
     const handlePlayClick = () => {
-        if (isLoggedIn) {
-            navigate('/game');
-        } else {
-            setShowAuthFlow(true);
-        }
+        navigate('/game');
     };
 
     return (
