@@ -3,8 +3,7 @@ import { GameState, Position } from './engine/types';
 import { CELL_SIZE, GRID_SIZE, LEVEL_1_PATH } from './engine/constants';
 
 // Map & Entities
-import tileGrass from './assets/tile-grass.png';
-import tilePath from './assets/tile-path.png';
+import TileMap from './assets/TileMap.png';
 import itemStar from './assets/item-star.png';
 
 // Towers
@@ -53,6 +52,8 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) =>
                 width: GRID_SIZE * CELL_SIZE,
                 height: GRID_SIZE * CELL_SIZE,
                 imageRendering: 'pixelated',
+                backgroundImage: `url(${TileMap})`,
+                backgroundSize: '100% 100%',
             }}
         >
             {/* Grid Layer */}
@@ -62,13 +63,11 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) =>
                         <div
                             key={`${x}-${y}`}
                             onClick={() => onTileClick({ x, y })}
-                            className={`cursor-pointer ${isPath(x, y) ? '' : 'hover:brightness-110 active:brightness-90'}`}
+                            className={`cursor-pointer ${isPath(x, y) ? '' : 'hover:bg-white/10 active:bg-white/20'}`}
                             style={{
                                 width: CELL_SIZE,
                                 height: CELL_SIZE,
-                                backgroundImage: `url(${isPath(x, y) ? tilePath : tileGrass})`,
-                                backgroundSize: '100% 100%',
-                                transition: 'filter 0.1s',
+                                transition: 'background-color 0.1s',
                             }}
                         />
                     ))}
@@ -146,8 +145,8 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) =>
                 <div
                     key={proj.id}
                     className={`absolute w-3 h-3 rounded-full shadow-sm z-30 ${proj.type === 'slow' ? 'bg-cyan-300 shadow-cyan-300' :
-                            proj.type === 'splash' ? 'bg-black border border-gray-600' :
-                                'bg-yellow-400'
+                        proj.type === 'splash' ? 'bg-black border border-gray-600' :
+                            'bg-yellow-400'
                         }`}
                     style={{
                         left: proj.x * CELL_SIZE + CELL_SIZE / 2 - 6,
