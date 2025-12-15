@@ -1,10 +1,4 @@
-// import type { Signer } from "@linera/client"; // Broken export in 0.15.4
-
-export interface Signer {
-    address(): Promise<string>;
-    containsKey(owner: string): Promise<boolean>;
-    sign(owner: string, value: Uint8Array): Promise<string>;
-}
+import type { Signer } from "@linera/client";
 import type { Wallet as DynamicWallet } from "@dynamic-labs/sdk-react-core";
 import { isEthereumWallet } from "@dynamic-labs/ethereum";
 
@@ -38,7 +32,14 @@ export class DynamicSigner implements Signer {
 
         try {
             const msgHex: `0x${string}` = `0x${uint8ArrayToHex(value)}`;
-            if (!isEthereumWallet(this.dynamicWallet)) throw new Error("Not Ethereum wallet");
+
+            // IMPORTANT: The value parameter is already pre-hashed, and the standard `signMessage`
+            // method would hash it again, resulting in a double-hash. To avoid this, we bypass
+            // the standard signing flow and use `personal_sign` directly on the wallet client.
+            // DO NOT USE: this.dynamicWallet.signMessage(msgHex) - it would cause double-hashing
+
+            // Note: First cast the wallet to an Ethereum wallet to get the wallet client
+            if (!isEthereumWallet(this.dynamicWallet)) throw new Error();
             const walletClient = await this.dynamicWallet.getWalletClient();
             const signature = await walletClient.request({
                 method: "personal_sign",

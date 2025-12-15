@@ -5,29 +5,24 @@ use linera_sdk::{
 };
 use serde::{Deserialize, Serialize};
 
-pub struct TowerDefenseAbi;
+pub struct LineraFightAbi;
 
-impl ContractAbi for TowerDefenseAbi {
+impl ContractAbi for LineraFightAbi {
     type Operation = Operation;
     type Response = ();
 }
 
-impl ServiceAbi for TowerDefenseAbi {
+impl ServiceAbi for LineraFightAbi {
     type Query = Request;
     type QueryResponse = Response;
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct TowerDefenseInit {
-    pub starting_gold: u64,
-    pub random_seed: u64,
-}
-
 #[derive(Debug, Deserialize, Serialize, GraphQLMutationRoot)]
 pub enum Operation {
-    Reset,
-    StartGame { wager: u64 },
+    StartGame {
+        wager: u64,
+    },
     Battle,
-    EndWave, // Equivalent to Stand
-    RequestGold,
+    EndWave,
+    Reset,
 }
