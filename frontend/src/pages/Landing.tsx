@@ -9,9 +9,15 @@ const Landing: React.FC = () => {
     const isLoggedIn = useIsLoggedIn();
 
     return (
-        <div className="relative h-screen overflow-hidden bg-black flex flex-col items-center justify-center">
+        <div className="relative h-screen overflow-hidden flex flex-col items-center justify-center">
             {/* Background with pixel vibe */}
-            <div className="absolute inset-0 z-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900 via-gray-900 to-black"></div>
+            {/* Background Video */}
+            {/* Background Image */}
+            <img
+                src="/background.png"
+                alt="Background"
+                className="absolute inset-0 w-full h-full object-cover z-0"
+            />
 
             <div className="z-10 text-center max-w-2xl px-4">
                 <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600 animate-pulse">
