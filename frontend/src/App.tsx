@@ -6,7 +6,7 @@ import { GameProvider } from './context/GameContext';
 
 const Layout = () => {
     return (
-        <div className="min-h-screen bg-black text-white font-sans">
+        <div className="min-h-screen text-white font-sans">
             <Outlet />
         </div>
     );

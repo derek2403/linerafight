@@ -5,6 +5,7 @@ import { useGameLoop } from './engine/useGameLoop';
 import { TowerType, Position } from './engine/types';
 import { TOWERS, LEVEL_1_PATH } from './engine/constants';
 import { useGame } from '../context/GameContext';
+import ConnectWallet from '../components/ConnectWallet';
 
 const Game: React.FC = () => {
     const { gameState, setGameState, startGame: localStartGame, skipWave, collectDrop } = useGameLoop();
@@ -78,10 +79,12 @@ const Game: React.FC = () => {
     };
 
     return (
-        <div className="flex h-screen bg-stone-900 text-slate-200 overflow-hidden font-mono">
+        <div className="flex h-screen text-slate-200 overflow-hidden font-mono">
             {/* Game Area Wrapper */}
             <div className="flex-1 flex flex-col items-center justify-center p-8 relative">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-stone-800 to-stone-950 opacity-50 z-0" />
+                <div className="absolute top-4 left-4 z-50">
+                    <ConnectWallet />
+                </div>
 
                 {/* Retro Frame */}
                 <div className="relative z-10 p-4 bg-stone-800 rounded-xl shadow-2xl border-4 border-stone-700">

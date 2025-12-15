@@ -1,9 +1,13 @@
 import React from 'react'
+import ConnectWallet from '../components/ConnectWallet';
 
 const Games: React.FC = () => {
     return (
         <div className="p-8">
-            <h2 className="text-3xl font-bold mb-6">Available Games</h2>
+            <div className="flex justify-between items-center mb-6">
+                <ConnectWallet />
+                <h2 className="text-3xl font-bold">Available Games</h2>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-gray-800 p-6 rounded-lg border border-gray-700">
                     <h3 className="text-2xl font-bold mb-4">Blackjack</h3>
