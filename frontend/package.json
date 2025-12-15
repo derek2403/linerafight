@@ -12,7 +12,7 @@
   "dependencies": {
     "@dynamic-labs/ethereum": "^4",
     "@dynamic-labs/sdk-react-core": "^4",
-    "@linera/client": "0.15.4",
+    "@linera/client": "0.15.7",
     "@metamask/providers": "^17.0.0",
     "@types/animejs": "^3.1.13",
     "animejs": "^3.2.1",

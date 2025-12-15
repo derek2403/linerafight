@@ -37,21 +37,42 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }, [primaryWallet]);
 
     const startGame = async (wager: number) => {
+        console.log("🎮 startGame called with wager:", wager);
+        console.log("🎮 isApplicationSet:", lineraAdapter.isApplicationSet());
+
         if (!lineraAdapter.isApplicationSet()) {
-            // Try to set app ID if missing
-            try { await lineraAdapter.setApplication(CONTRACTS_APP_ID); } catch (e) { }
+            console.log("🎮 Application not set, trying to set...");
+            try {
+                await lineraAdapter.setApplication(CONTRACTS_APP_ID);
+                console.log("🎮 Application set successfully");
+            } catch (e) {
+                console.error("🎮 Failed to set application:", e);
+            }
         }
 
-        console.log(`Starting game with wager: ${wager}`);
+        console.log(`🎮 Starting game with wager: ${wager}`);
 
         // Reset state from any previous stuck game
         try {
+            console.log("🎮 Resetting previous game state...");
             await lineraAdapter.mutate("mutation { reset }");
-        } catch (e) { /* ignore if no game active */ }
+            console.log("🎮 Reset completed");
+        } catch (e) {
+            console.log("🎮 Reset ignored (no game active):", e);
+        }
 
+        console.log("🎮 Sending StartGame mutation...");
         const mutation = `mutation StartGame($wager: Int!) { startGame(wager: $wager) }`;
-        await lineraAdapter.mutate(mutation, { wager });
+        try {
+            const result = await lineraAdapter.mutate(mutation, { wager });
+            console.log("🎮 StartGame result:", result);
+        } catch (e) {
+            console.error("🎮 StartGame mutation failed:", e);
+            throw e;
+        }
+
         await refreshData();
+        console.log("🎮 startGame completed");
     };
 
     const processWave = async (wave: number): Promise<string | null> => {
@@ -62,13 +83,11 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         try {
             const mutation = `mutation { battle }`;
             await lineraAdapter.mutate(mutation);
-            // Fetch result to check if overwhelmed
             const result = await checkGameResult();
             await refreshData();
             return result;
         } catch (e) {
             console.error("Battle failed:", e);
-            // If battle failed, maybe we aren't in battle phase?
             return "Error";
         }
     };

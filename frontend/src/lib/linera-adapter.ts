@@ -1,4 +1,5 @@
 import {
+  initialize,
   Faucet,
   Client,
   Wallet,
@@ -6,9 +7,6 @@ import {
 } from "@linera/client";
 import type { Wallet as DynamicWallet } from "@dynamic-labs/sdk-react-core";
 import { DynamicSigner } from "./dynamic-signer";
-
-// Import the default export separately for initialization
-import * as lineraModule from "@linera/client";
 
 export interface LineraProvider {
   client: Client;
@@ -50,9 +48,9 @@ export class LineraAdapter {
         console.log("🔗 Connecting with Dynamic wallet:", address);
 
         try {
-          // Initialize using the module's default export
+          // Initialize using the named export from @linera/client
           if (!this.wasmInitPromise) {
-            this.wasmInitPromise = (lineraModule as any).default?.() ?? Promise.resolve();
+            this.wasmInitPromise = initialize();
           }
           await this.wasmInitPromise;
           console.log("✅ Linera WASM modules initialized successfully");
@@ -78,9 +76,9 @@ export class LineraAdapter {
         await new Promise(resolve => setTimeout(resolve, 5000));
 
         const signer = new DynamicSigner(dynamicWallet);
-        // Per linerabet docs: use only 2 arguments (wallet, signer)
-        // Type assertion needed as types say 3 args but linerabet uses 2
-        const client = await new (Client as any)(wallet, signer);
+        // 0.15.7 API: new Client(wallet, signer, skip_process_inbox)
+        // Use false to process inbox and sync properly with validators
+        const client = await new Client(wallet, signer, false);
         console.log("✅ Linera wallet created successfully!");
 
         // Debug logging
@@ -120,10 +118,8 @@ export class LineraAdapter {
     if (!this.provider) throw new Error("Not connected to Linera");
     if (!appId) throw new Error("Application ID is required");
 
-    // Use client.frontend().application(appId) as per 0.15.4 API
-    const application = await this.provider.client
-      .frontend()
-      .application(appId);
+    // 0.15.7 API: use client.application(appId) directly
+    const application = await this.provider.client.application(appId);
 
     if (!application) throw new Error("Failed to get application");
     console.log("✅ Linera application set successfully!");
@@ -166,18 +162,28 @@ export class LineraAdapter {
 
     console.log("🚀 Sending mutation:", mutation);
     if (variables) console.log("📦 Variables:", variables);
+    console.log("🔗 Application ID:", this.appId);
 
     const payload = variables ? { query: mutation, variables } : { query: mutation };
-    const result = await this.application.query(JSON.stringify(payload));
-    const response = JSON.parse(result);
+    console.log("📤 Full payload:", JSON.stringify(payload));
 
-    if (response.errors) {
-      console.error("GraphQL Errors:", response.errors);
-      throw new Error(response.errors[0].message);
+    try {
+      const result = await this.application.query(JSON.stringify(payload));
+      console.log("📥 Raw result:", result);
+
+      const response = JSON.parse(result);
+
+      if (response.errors) {
+        console.error("❌ GraphQL Errors:", response.errors);
+        throw new Error(response.errors[0].message);
+      }
+
+      console.log("✅ Mutation executed successfully!", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("❌ Mutation failed:", error);
+      throw error;
     }
-
-    console.log("✅ Mutation executed successfully!", response.data);
-    return response.data;
   }
 
   getProvider(): LineraProvider {

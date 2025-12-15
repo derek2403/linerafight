@@ -9,7 +9,7 @@ import { useGame } from '../context/GameContext';
 const Game: React.FC = () => {
     const { gameState, setGameState, startGame: localStartGame, skipWave, collectDrop } = useGameLoop();
     const [selectedTower, setSelectedTower] = useState<TowerType | null>(null);
-    const { startGame: chainStartGame, processWave, endGame: chainEndGame, isConnecting } = useGame();
+    const { startGame: chainStartGame, processWave, endGame: chainEndGame, isConnecting, lineraData } = useGame();
 
     // Track wave to trigger chain actions
     const prevWaveRef = useRef(gameState.wave);
@@ -19,10 +19,17 @@ const Game: React.FC = () => {
 
     useEffect(() => {
         const syncChain = async () => {
+            // Guard: Don't sync if Linera isn't connected yet
+            if (!lineraData) {
+                console.log("⏳ Waiting for Linera connection before syncing...");
+                return;
+            }
+
             // Check for Game Start (Wave 1 and was not playing or wave 0?)
             if (gameState.isPlaying && !isSessionActiveRef.current) {
                 isSessionActiveRef.current = true;
                 // Trigger Chain Start
+                console.log("🎮 Linera connected, starting chain game...");
                 await chainStartGame(1); // Default wager 1
             }
 
@@ -41,7 +48,7 @@ const Game: React.FC = () => {
         };
 
         syncChain();
-    }, [gameState.wave, gameState.isPlaying, gameState.isGameOver, chainStartGame, processWave, chainEndGame]);
+    }, [gameState.wave, gameState.isPlaying, gameState.isGameOver, chainStartGame, processWave, chainEndGame, lineraData]);
 
     const handleTileClick = (pos: Position) => {
         if (!selectedTower) return;
