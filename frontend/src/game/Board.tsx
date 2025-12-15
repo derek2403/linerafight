@@ -81,10 +81,10 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) =>
                     onClick={(e) => { e.stopPropagation(); onDropClick(drop.id); }}
                     className="absolute z-40 cursor-pointer hover:scale-125 transition-transform animate-bounce"
                     style={{
-                        left: drop.x * CELL_SIZE + CELL_SIZE / 4,
-                        top: drop.y * CELL_SIZE + CELL_SIZE / 4,
-                        width: CELL_SIZE / 2,
-                        height: CELL_SIZE / 2,
+                        left: drop.x * CELL_SIZE - (CELL_SIZE * 0.25),
+                        top: drop.y * CELL_SIZE - (CELL_SIZE * 0.25),
+                        width: CELL_SIZE * 1.5,
+                        height: CELL_SIZE * 1.5,
                         backgroundImage: `url(${itemStar})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
@@ -99,10 +99,10 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) =>
                     key={enemy.id}
                     className="absolute pointer-events-none"
                     style={{
-                        left: enemy.x * CELL_SIZE,
-                        top: enemy.y * CELL_SIZE,
-                        width: CELL_SIZE,
-                        height: CELL_SIZE,
+                        left: enemy.x * CELL_SIZE - (CELL_SIZE * 0.75),
+                        top: enemy.y * CELL_SIZE - (CELL_SIZE * 0.75),
+                        width: CELL_SIZE * 2.5,
+                        height: CELL_SIZE * 2.5,
                         backgroundImage: `url(${getEnemyImg(enemy.type)})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
@@ -124,12 +124,12 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) =>
             {gameState.towers.map(tower => (
                 <div
                     key={tower.id}
-                    className="absolute"
+                    className="absolute animate-pixel-float"
                     style={{
-                        left: tower.x * CELL_SIZE,
-                        top: tower.y * CELL_SIZE,
-                        width: CELL_SIZE,
-                        height: CELL_SIZE,
+                        left: tower.x * CELL_SIZE - (CELL_SIZE * 0.25),
+                        top: tower.y * CELL_SIZE - (CELL_SIZE * 0.25),
+                        width: CELL_SIZE * 1.5,
+                        height: CELL_SIZE * 1.5,
                         backgroundImage: `url(${getTowerImg(tower.type)})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
