@@ -5,11 +5,13 @@ import { useGameLoop } from './engine/useGameLoop';
 import { TowerType, Position } from './engine/types';
 import { TOWERS, LEVEL_1_PATH } from './engine/constants';
 import { useGame } from '../context/GameContext';
+import ConnectWallet from '../components/ConnectWallet';
+import EnemyInfo from './EnemyInfo';
 
 const Game: React.FC = () => {
     const { gameState, setGameState, startGame: localStartGame, skipWave, collectDrop } = useGameLoop();
     const [selectedTower, setSelectedTower] = useState<TowerType | null>(null);
-    const { startGame: chainStartGame, processWave, endGame: chainEndGame, isConnecting } = useGame();
+    const { startGame: chainStartGame, processWave, endGame: chainEndGame, isConnecting, lineraData } = useGame();
 
     // Track wave to trigger chain actions
     const prevWaveRef = useRef(gameState.wave);
@@ -19,10 +21,17 @@ const Game: React.FC = () => {
 
     useEffect(() => {
         const syncChain = async () => {
+            // Guard: Don't sync if Linera isn't connected yet
+            if (!lineraData) {
+                console.log("⏳ Waiting for Linera connection before syncing...");
+                return;
+            }
+
             // Check for Game Start (Wave 1 and was not playing or wave 0?)
             if (gameState.isPlaying && !isSessionActiveRef.current) {
                 isSessionActiveRef.current = true;
                 // Trigger Chain Start
+                console.log("🎮 Linera connected, starting chain game...");
                 await chainStartGame(1); // Default wager 1
             }
 
@@ -41,7 +50,7 @@ const Game: React.FC = () => {
         };
 
         syncChain();
-    }, [gameState.wave, gameState.isPlaying, gameState.isGameOver, chainStartGame, processWave, chainEndGame]);
+    }, [gameState.wave, gameState.isPlaying, gameState.isGameOver, chainStartGame, processWave, chainEndGame, lineraData]);
 
     const handleTileClick = (pos: Position) => {
         if (!selectedTower) return;
@@ -78,13 +87,14 @@ const Game: React.FC = () => {
     };
 
     return (
-        <div className="flex h-screen bg-stone-900 text-slate-200 overflow-hidden font-mono">
-            {/* Game Area Wrapper */}
-            <div className="flex-1 flex flex-col items-center justify-center p-8 relative">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-stone-800 to-stone-950 opacity-50 z-0" />
+        <div className="flex h-screen w-screen text-slate-200 overflow-hidden font-mono bg-stone-950">
+            {/* Left Sidebar - Enemy Info */}
+            <EnemyInfo />
 
+            {/* Center - Game Board */}
+            <div className="flex-1 relative flex items-center justify-center bg-stone-900/50 shadow-inner">
                 {/* Retro Frame */}
-                <div className="relative z-10 p-4 bg-stone-800 rounded-xl shadow-2xl border-4 border-stone-700">
+                <div className="relative p-4 bg-stone-800 rounded-xl shadow-2xl border-4 border-stone-700">
                     <div className="border border-stone-900 rounded-lg overflow-hidden ring-4 ring-black/40">
                         <Board
                             gameState={gameState}
@@ -93,28 +103,38 @@ const Game: React.FC = () => {
                         />
                     </div>
                 </div>
+
+                {/* Connection Status Overlay - Centered or Top Left of Board Area */}
+                {isConnecting && (
+                    <div className="absolute top-4 left-4 bg-blue-900/80 px-4 py-2 rounded text-xs text-blue-200 animate-pulse border border-blue-500 z-50">
+                        Connecting to Linera...
+                    </div>
+                )}
             </div>
 
-            {/* HUD / Controls */}
-            <Controls
-                gold={gameState.gold}
-                lives={gameState.lives}
-                stars={gameState.stars}
-                wave={gameState.wave}
-                waveTimer={gameState.waveTimer}
-                selectedTower={selectedTower}
-                onSelectTower={setSelectedTower}
-                onStartGame={localStartGame}
-                onSkipWave={skipWave}
-                isPlaying={gameState.isPlaying}
-            />
-
-            {/* Connection Status Overlay */}
-            {isConnecting && (
-                <div className="absolute top-4 right-4 bg-blue-900/80 px-4 py-2 rounded text-xs text-blue-200 animate-pulse border border-blue-500 z-50">
-                    Connecting to Linera...
+            {/* Right Sidebar - Wallet & Controls */}
+            <div className="w-96 bg-gray-900 border-l border-gray-800 flex flex-col shadow-2xl z-20">
+                {/* Wallet Connection Header */}
+                <div className="p-4 border-b border-gray-800 bg-gray-900/50">
+                    <ConnectWallet />
                 </div>
-            )}
+
+                {/* Controls - Takes remaining height */}
+                <div className="flex-1 overflow-hidden">
+                    <Controls
+                        gold={gameState.gold}
+                        lives={gameState.lives}
+                        stars={gameState.stars}
+                        wave={gameState.wave}
+                        waveTimer={gameState.waveTimer}
+                        selectedTower={selectedTower}
+                        onSelectTower={setSelectedTower}
+                        onStartGame={localStartGame}
+                        onSkipWave={skipWave}
+                        isPlaying={gameState.isPlaying}
+                    />
+                </div>
+            </div>
 
             {/* Game Over Modal */}
             {gameState.isGameOver && (

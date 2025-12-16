@@ -1,0 +1,33 @@
+[package]
+name = "linera-fight"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-graphql = { version = "=7.0.17", default-features = false }
+linera-sdk = "0.15.7"
+linera-views = "0.15.7"
+linera-base = "0.15.7"
+futures = { version = "0.3" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0" }
+hex = "0.4"
+bcs = "0.1"
+
+[dev-dependencies]
+linera-sdk = { version = "0.15.4", features = ["test", "wasmer"] }
+tokio = { version = "1.40", features = ["rt", "sync"] }
+
+[[bin]]
+name = "linera_fight_contract"
+path = "src/contract.rs"
+
+[[bin]]
+name = "linera_fight_service"
+path = "src/service.rs"
+
+[profile.release]
+debug = true
+lto = true
+opt-level = 'z'
+strip = 'debuginfo'

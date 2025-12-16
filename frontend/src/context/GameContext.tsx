@@ -37,40 +37,39 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     }, [primaryWallet]);
 
     const startGame = async (wager: number) => {
+        console.log("🎮 startGame called with wager:", wager);
+
         if (!lineraAdapter.isApplicationSet()) {
-            // Try to set app ID if missing
-            try { await lineraAdapter.setApplication(CONTRACTS_APP_ID); } catch (e) { }
+            console.log("🎮 Application not set, trying to set...");
+            try {
+                await lineraAdapter.setApplication(CONTRACTS_APP_ID);
+                console.log("🎮 Application set successfully");
+            } catch (e) {
+                console.error("🎮 Failed to set application:", e);
+            }
         }
 
-        console.log(`Starting game with wager: ${wager}`);
-
-        // Reset state from any previous stuck game
-        try {
-            await lineraAdapter.mutate("mutation { reset }");
-        } catch (e) { /* ignore if no game active */ }
-
+        // Only ONE transaction: startGame
+        console.log("🎮 Sending StartGame mutation...");
         const mutation = `mutation StartGame($wager: Int!) { startGame(wager: $wager) }`;
-        await lineraAdapter.mutate(mutation, { wager });
+        try {
+            const result = await lineraAdapter.mutate(mutation, { wager });
+            console.log("🎮 StartGame result:", result);
+        } catch (e) {
+            console.error("🎮 StartGame mutation failed:", e);
+            throw e;
+        }
+
         await refreshData();
+        console.log("🎮 startGame completed");
     };
 
     const processWave = async (wave: number): Promise<string | null> => {
-        if (!lineraAdapter.isApplicationSet()) return null;
-
-        console.log(`Processing Wave ${wave} (Battle/Hit)`);
-
-        try {
-            const mutation = `mutation { battle }`;
-            await lineraAdapter.mutate(mutation);
-            // Fetch result to check if overwhelmed
-            const result = await checkGameResult();
-            await refreshData();
-            return result;
-        } catch (e) {
-            console.error("Battle failed:", e);
-            // If battle failed, maybe we aren't in battle phase?
-            return "Error";
-        }
+        // NOTE: We no longer send chain mutations per wave/hit.
+        // The game logic is handled locally in Game.tsx.
+        // Only startGame and endGame trigger on-chain transactions.
+        console.log(`📊 Wave ${wave} processed locally (no chain mutation)`);
+        return null;
     };
 
     const endGame = async () => {
@@ -85,18 +84,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const checkGameResult = async (): Promise<string | null> => {
-        const owner = lineraAdapter.identity();
-        const query = `
-            query GetResult($owner: AccountOwner!) {
-                player(owner: $owner) {
-                    lastResult
-                }
-            }
-        `;
-        const data = await lineraAdapter.queryApplication<{ player: { lastResult: string } }>(query, { owner });
-        return data.player?.lastResult || null;
-    };
 
 
     useEffect(() => {

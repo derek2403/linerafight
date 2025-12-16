@@ -1,1 +1,1 @@
-export const CONTRACTS_APP_ID = "3d15f8690d08adb7c9c4bd10c701e257e588338cdfc716ffb79c31d43ec6b5bc";
+export const CONTRACTS_APP_ID = "ce058f37d2d749360409e7070dfbbc75f18a6bac6a1de363219f0a4af0cb7816";
