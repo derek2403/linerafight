@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { GameState, Enemy, Tower, Projectile, EnemyType, Drop } from './types';
+import { GameState, Enemy, EnemyType } from './types';
 import { ENEMIES, TOWERS, LEVEL_1_PATH, INITIAL_GOLD, INITIAL_LIVES } from './constants';
 
 const WAVE_INTERVAL = 15; // Seconds between waves
