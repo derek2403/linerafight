@@ -38,7 +38,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
     const startGame = async (wager: number) => {
         console.log("🎮 startGame called with wager:", wager);
-        console.log("🎮 isApplicationSet:", lineraAdapter.isApplicationSet());
 
         if (!lineraAdapter.isApplicationSet()) {
             console.log("🎮 Application not set, trying to set...");
@@ -50,17 +49,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
             }
         }
 
-        console.log(`🎮 Starting game with wager: ${wager}`);
-
-        // Reset state from any previous stuck game
-        try {
-            console.log("🎮 Resetting previous game state...");
-            await lineraAdapter.mutate("mutation { reset }");
-            console.log("🎮 Reset completed");
-        } catch (e) {
-            console.log("🎮 Reset ignored (no game active):", e);
-        }
-
+        // Only ONE transaction: startGame
         console.log("🎮 Sending StartGame mutation...");
         const mutation = `mutation StartGame($wager: Int!) { startGame(wager: $wager) }`;
         try {
@@ -76,20 +65,11 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     };
 
     const processWave = async (wave: number): Promise<string | null> => {
-        if (!lineraAdapter.isApplicationSet()) return null;
-
-        console.log(`Processing Wave ${wave} (Battle/Hit)`);
-
-        try {
-            const mutation = `mutation { battle }`;
-            await lineraAdapter.mutate(mutation);
-            const result = await checkGameResult();
-            await refreshData();
-            return result;
-        } catch (e) {
-            console.error("Battle failed:", e);
-            return "Error";
-        }
+        // NOTE: We no longer send chain mutations per wave/hit.
+        // The game logic is handled locally in Game.tsx.
+        // Only startGame and endGame trigger on-chain transactions.
+        console.log(`📊 Wave ${wave} processed locally (no chain mutation)`);
+        return null;
     };
 
     const endGame = async () => {
@@ -104,18 +84,6 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const checkGameResult = async (): Promise<string | null> => {
-        const owner = lineraAdapter.identity();
-        const query = `
-            query GetResult($owner: AccountOwner!) {
-                player(owner: $owner) {
-                    lastResult
-                }
-            }
-        `;
-        const data = await lineraAdapter.queryApplication<{ player: { lastResult: string } }>(query, { owner });
-        return data.player?.lastResult || null;
-    };
 
 
     useEffect(() => {
