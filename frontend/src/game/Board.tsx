@@ -3,8 +3,7 @@ import { GameState, Position } from './engine/types';
 import { CELL_SIZE, GRID_SIZE, LEVEL_1_PATH } from './engine/constants';
 
 // Map & Entities
-import tileGrass from './assets/tile-grass.png';
-import tilePath from './assets/tile-path.png';
+import TileMap from './assets/TileMap.png';
 import itemStar from './assets/item-star.png';
 
 // Towers
@@ -53,6 +52,8 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) =>
                 width: GRID_SIZE * CELL_SIZE,
                 height: GRID_SIZE * CELL_SIZE,
                 imageRendering: 'pixelated',
+                backgroundImage: `url(${TileMap})`,
+                backgroundSize: '100% 100%',
             }}
         >
             {/* Grid Layer */}
@@ -62,13 +63,11 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) =>
                         <div
                             key={`${x}-${y}`}
                             onClick={() => onTileClick({ x, y })}
-                            className={`cursor-pointer ${isPath(x, y) ? '' : 'hover:brightness-110 active:brightness-90'}`}
+                            className={`cursor-pointer ${isPath(x, y) ? '' : 'hover:bg-white/10 active:bg-white/20'}`}
                             style={{
                                 width: CELL_SIZE,
                                 height: CELL_SIZE,
-                                backgroundImage: `url(${isPath(x, y) ? tilePath : tileGrass})`,
-                                backgroundSize: '100% 100%',
-                                transition: 'filter 0.1s',
+                                transition: 'background-color 0.1s',
                             }}
                         />
                     ))}
@@ -82,10 +81,10 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) =>
                     onClick={(e) => { e.stopPropagation(); onDropClick(drop.id); }}
                     className="absolute z-40 cursor-pointer hover:scale-125 transition-transform animate-bounce"
                     style={{
-                        left: drop.x * CELL_SIZE + CELL_SIZE / 4,
-                        top: drop.y * CELL_SIZE + CELL_SIZE / 4,
-                        width: CELL_SIZE / 2,
-                        height: CELL_SIZE / 2,
+                        left: drop.x * CELL_SIZE - (CELL_SIZE * 0.25),
+                        top: drop.y * CELL_SIZE - (CELL_SIZE * 0.25),
+                        width: CELL_SIZE * 1.5,
+                        height: CELL_SIZE * 1.5,
                         backgroundImage: `url(${itemStar})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
@@ -100,10 +99,10 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) =>
                     key={enemy.id}
                     className="absolute pointer-events-none"
                     style={{
-                        left: enemy.x * CELL_SIZE,
-                        top: enemy.y * CELL_SIZE,
-                        width: CELL_SIZE,
-                        height: CELL_SIZE,
+                        left: enemy.x * CELL_SIZE - (CELL_SIZE * 0.75),
+                        top: enemy.y * CELL_SIZE - (CELL_SIZE * 0.75),
+                        width: CELL_SIZE * 2.5,
+                        height: CELL_SIZE * 2.5,
                         backgroundImage: `url(${getEnemyImg(enemy.type)})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
@@ -125,12 +124,12 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) =>
             {gameState.towers.map(tower => (
                 <div
                     key={tower.id}
-                    className="absolute"
+                    className="absolute animate-pixel-float"
                     style={{
-                        left: tower.x * CELL_SIZE,
-                        top: tower.y * CELL_SIZE,
-                        width: CELL_SIZE,
-                        height: CELL_SIZE,
+                        left: tower.x * CELL_SIZE - (CELL_SIZE * 0.25),
+                        top: tower.y * CELL_SIZE - (CELL_SIZE * 0.25),
+                        width: CELL_SIZE * 1.5,
+                        height: CELL_SIZE * 1.5,
                         backgroundImage: `url(${getTowerImg(tower.type)})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
@@ -146,8 +145,8 @@ const Board: React.FC<BoardProps> = ({ gameState, onTileClick, onDropClick }) =>
                 <div
                     key={proj.id}
                     className={`absolute w-3 h-3 rounded-full shadow-sm z-30 ${proj.type === 'slow' ? 'bg-cyan-300 shadow-cyan-300' :
-                            proj.type === 'splash' ? 'bg-black border border-gray-600' :
-                                'bg-yellow-400'
+                        proj.type === 'splash' ? 'bg-black border border-gray-600' :
+                            'bg-yellow-400'
                         }`}
                     style={{
                         left: proj.x * CELL_SIZE + CELL_SIZE / 2 - 6,
