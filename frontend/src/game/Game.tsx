@@ -79,29 +79,27 @@ const Game: React.FC = () => {
     };
 
     return (
-        <div className="flex h-screen text-slate-200 overflow-hidden font-mono">
+        <div className="relative h-screen w-screen text-slate-200 overflow-hidden font-mono bg-stone-950">
             {/* HUD / Controls */}
-            <Controls
-                gold={gameState.gold}
-                lives={gameState.lives}
-                stars={gameState.stars}
-                wave={gameState.wave}
-                waveTimer={gameState.waveTimer}
-                selectedTower={selectedTower}
-                onSelectTower={setSelectedTower}
-                onStartGame={localStartGame}
-                onSkipWave={skipWave}
-                isPlaying={gameState.isPlaying}
-            />
+            <div className="absolute left-0 top-0 bottom-0 z-40">
+                <Controls
+                    gold={gameState.gold}
+                    lives={gameState.lives}
+                    stars={gameState.stars}
+                    wave={gameState.wave}
+                    waveTimer={gameState.waveTimer}
+                    selectedTower={selectedTower}
+                    onSelectTower={setSelectedTower}
+                    onStartGame={localStartGame}
+                    onSkipWave={skipWave}
+                    isPlaying={gameState.isPlaying}
+                />
+            </div>
 
-            {/* Game Area Wrapper */}
-            <div className="flex-1 flex flex-col items-center justify-center p-8 relative">
-                <div className="absolute top-4 right-4 z-50">
-                    <ConnectWallet />
-                </div>
-
+            {/* Game Area Wrapper - Centered */}
+            <div className="absolute inset-0 flex items-center justify-center z-10">
                 {/* Retro Frame */}
-                <div className="relative z-10 p-4 bg-stone-800 rounded-xl shadow-2xl border-4 border-stone-700">
+                <div className="relative p-4 bg-stone-800 rounded-xl shadow-2xl border-4 border-stone-700">
                     <div className="border border-stone-900 rounded-lg overflow-hidden ring-4 ring-black/40">
                         <Board
                             gameState={gameState}
@@ -112,12 +110,14 @@ const Game: React.FC = () => {
                 </div>
             </div>
 
-            {/* HUD / Controls */}
-
+            {/* ConnectWallet - Top Right */}
+            <div className="absolute top-4 right-4 z-50">
+                <ConnectWallet />
+            </div>
 
             {/* Connection Status Overlay */}
             {isConnecting && (
-                <div className="absolute top-4 left-4 bg-blue-900/80 px-4 py-2 rounded text-xs text-blue-200 animate-pulse border border-blue-500 z-50">
+                <div className="absolute top-4 left-[400px] bg-blue-900/80 px-4 py-2 rounded text-xs text-blue-200 animate-pulse border border-blue-500 z-50">
                     Connecting to Linera...
                 </div>
             )}

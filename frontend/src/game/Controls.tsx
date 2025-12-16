@@ -32,7 +32,7 @@ const Controls: React.FC<ControlsProps> = ({
     };
 
     return (
-        <div className="w-96 bg-gray-900 border-l border-gray-800 flex flex-col shadow-2xl z-20">
+        <div className="w-96 h-full bg-gray-900 border-l border-gray-800 flex flex-col shadow-2xl z-20">
             {/* Stats Header */}
             <div className="p-6 bg-gray-800 border-b border-gray-700 grid grid-cols-2 gap-4">
                 <div className="bg-black/30 p-3 rounded border border-white/10">
